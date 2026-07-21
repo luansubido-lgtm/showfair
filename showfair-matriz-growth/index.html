@@ -1,0 +1,341 @@
+<title>Matriz de Priorização de Implantação — Show Fair Growth</title>
+<style>
+  :root {
+    /* Poster (folha) — sempre claro, em ambos os temas */
+    --poster-bg:    #f7f2fc;
+    --poster-panel: #fbf8fe;
+    --poster-ink:   #241830;
+    --poster-ink-2: #5b4a6e;
+    --poster-muted: #8b7ba3;
+    --poster-hair:  #e2d6f0;
+    --poster-axis:  #4a3a63;
+
+    /* Marca Show Fair */
+    --brand-purple:  #8100cc;
+    --brand-turq:    #00ffe6;
+    --brand-pink:    #ffb4f0;
+    --brand-yellow:  #fff05a;
+
+    /* Camadas (ondas) — roxo escuro no vértice → claro fora */
+    --band-1: #3a0f57;
+    --band-2: #571e80;
+    --band-3: #7638a3;
+    --band-4: #9d6ac4;
+    --band-5: #c3a2e0;
+
+    /* Categorias (bolinhas) */
+    --cat-fundacao:      #ffffff;
+    --cat-diferenciacao: #00ffe6;
+    --cat-canal:         #fff05a;
+    --cat-oportunidade:  #ffb4f0;
+    --cat-naopri:        #b9aecb;
+    --dot-ink:  #2a1140;
+    --dot-ring: #2a1140;
+
+    /* Moldura (adapta ao tema) */
+    --page:      #ece4f5;
+    --frame-ink: #241830;
+    --frame-ink-2: #5b4a6e;
+    --panel:     #fbf8fe;
+    --panel-hair:#e2d6f0;
+    --accent:    #9b3fd4;
+    --tip-bg:    #241038;
+    --tip-ink:   #f3ecfa;
+    --shadow:    0 1px 2px rgba(36,24,48,.06), 0 10px 34px rgba(36,24,48,.12);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      --page:#120c1a; --frame-ink:#ece3f6; --frame-ink-2:#a99cbd;
+      --panel:#1c1526; --panel-hair:#2e2440; --accent:#c78bec;
+      --tip-bg:#f3ecfa; --tip-ink:#241038;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 12px 38px rgba(0,0,0,.55);
+    }
+  }
+  :root[data-theme="dark"] {
+    --page:#120c1a; --frame-ink:#ece3f6; --frame-ink-2:#a99cbd;
+    --panel:#1c1526; --panel-hair:#2e2440; --accent:#c78bec;
+    --tip-bg:#f3ecfa; --tip-ink:#241038;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 12px 38px rgba(0,0,0,.55);
+  }
+
+  * { box-sizing: border-box; }
+  .mx {
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+    background: var(--page); color: var(--frame-ink);
+    padding: 26px clamp(14px,3.5vw,38px) 44px; -webkit-font-smoothing: antialiased;
+  }
+  .mx-head { max-width: 1380px; margin: 0 auto 20px; }
+  .mx-eyebrow { font-size: 11.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+  .mx-title { font-size: clamp(21px,2.5vw,31px); font-weight: 800; letter-spacing: -.015em; margin: 0; line-height: 1.08; text-wrap: balance; }
+  .mx-sub { font-size: 13.5px; color: var(--frame-ink-2); margin: 7px 0 0; max-width: 72ch; line-height: 1.5; }
+
+  .mx-grid { max-width: 1380px; margin: 0 auto; display: grid; grid-template-columns: minmax(0,1.45fr) minmax(288px,.92fr); gap: 24px; align-items: start; }
+  @media (max-width: 900px) { .mx-grid { grid-template-columns: 1fr; } }
+
+  .mx-poster { background: var(--poster-bg); border: 1px solid var(--poster-hair); border-radius: 16px; padding: 14px 16px 8px; box-shadow: var(--shadow); }
+  .mx-poster svg { width: 100%; height: auto; display: block; overflow: visible; }
+
+  .band-sep { fill: none; stroke: var(--poster-bg); stroke-width: 2.5; }
+  .band-edge { fill: none; stroke: rgba(36,24,48,.08); stroke-width: 1; }
+  .axis-line { stroke: var(--poster-axis); stroke-width: 1.6; fill: none; }
+  .axis-arrow { fill: var(--poster-axis); }
+  .axis-title { fill: var(--poster-ink-2); font-size: 12px; font-weight: 700; letter-spacing: .04em; }
+  .pole { fill: var(--poster-bg); stroke: var(--poster-axis); stroke-width: 1.4; }
+  .pole-sign { fill: var(--poster-axis); font-size: 15px; font-weight: 700; text-anchor: middle; dominant-baseline: central; }
+  .band-label { fill: var(--poster-muted); font-size: 11px; font-weight: 800; letter-spacing: .07em; text-anchor: middle; }
+  .band-label-sub { fill: var(--poster-muted); font-size: 8.5px; font-weight: 600; text-anchor: middle; opacity: .82; }
+
+  .dot { stroke: var(--dot-ring); stroke-width: 1.6; cursor: pointer; transition: stroke-width .12s ease; }
+  .dot-num { font-size: 12.5px; font-weight: 800; text-anchor: middle; dominant-baseline: central; pointer-events: none; font-variant-numeric: tabular-nums; fill: var(--dot-ink); }
+  .dot-hit { fill: transparent; cursor: pointer; }
+  g.node { outline: none; }
+  g.node:hover .dot, g.node:focus-visible .dot { stroke-width: 3.4; }
+  g.node.dim { opacity: .26; }
+
+  .mx-legend { display: flex; flex-direction: column; gap: 13px; }
+  .cat { background: var(--panel); border: 1px solid var(--panel-hair); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); }
+  .cat-head { display: flex; align-items: center; gap: 9px; padding: 9px 13px; font-size: 12.5px; font-weight: 800; letter-spacing: .01em; font-style: italic; color: var(--frame-ink); border-bottom: 1px solid var(--panel-hair); }
+  .cat-head .dotmark { width: 12px; height: 12px; border-radius: 50%; flex: none; border: 1.5px solid var(--dot-ring); }
+  .cat-head .count { margin-left: auto; font-style: normal; font-weight: 700; font-size: 11px; opacity: .5; font-variant-numeric: tabular-nums; }
+  .cat-items { padding: 7px 9px 9px; display: grid; grid-template-columns: 1fr 1fr; gap: 1px 10px; }
+  .cat-items.one { grid-template-columns: 1fr; }
+  .li { display: flex; gap: 6px; align-items: baseline; padding: 3px 5px; border-radius: 6px; font-size: 11.5px; line-height: 1.32; color: var(--frame-ink-2); cursor: default; }
+  .li:hover, .li.on { background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--frame-ink); }
+  .li-n { font-weight: 800; color: var(--frame-ink); font-variant-numeric: tabular-nums; min-width: 16px; flex: none; }
+  .li-tag { font-size: 9.5px; font-weight: 700; color: var(--poster-muted); }
+  .foot { font-size: 10.5px; color: var(--frame-ink-2); opacity: .82; padding: 2px 5px; line-height: 1.5; }
+
+  #tip { position: fixed; z-index: 50; max-width: 272px; background: var(--tip-bg); color: var(--tip-ink); padding: 9px 12px; border-radius: 9px; font-size: 12px; line-height: 1.42; pointer-events: none; opacity: 0; transform: translateY(4px); transition: opacity .12s ease, transform .12s ease; box-shadow: 0 12px 34px rgba(0,0,0,.3); }
+  #tip.show { opacity: 1; transform: translateY(0); }
+  #tip .t-t { font-weight: 800; margin-bottom: 3px; }
+  #tip .t-m { opacity: .8; font-size: 11px; }
+  #tip .t-n { margin-top: 5px; font-style: italic; opacity: .9; font-size: 11px; }
+  @media (prefers-reduced-motion: reduce) { #tip, .dot { transition: none; } }
+</style>
+
+<div class="mx">
+  <div class="mx-head">
+    <div class="mx-eyebrow">Show Fair · Arquitetura de Growth</div>
+    <h1 class="mx-title">Matriz de Priorização de Implantação</h1>
+    <p class="mx-sub">21/07 → 28/09/2026 · inauguração da cidade piloto em 01/09 · 5 ondas de 2 semanas + horizonte futuro. Quanto mais perto do vértice (canto inferior esquerdo), mais cedo entra; o ângulo reflete o peso em cada eixo.</p>
+  </div>
+  <div class="mx-grid">
+    <div class="mx-poster"><svg id="svg" viewBox="0 0 1000 900" role="img" aria-label="Matriz de priorização de implantação Show Fair"></svg></div>
+    <div class="mx-legend" id="legend"></div>
+  </div>
+</div>
+<div id="tip" role="tooltip"></div>
+
+<script>
+(function(){
+  var CAT = {
+    fundacao:      { label:"Fundação Obrigatória",    color:"var(--cat-fundacao)" },
+    diferenciacao: { label:"Diferenciação de Growth", color:"var(--cat-diferenciacao)" },
+    canal:         { label:"Canal de Aquisição",      color:"var(--cat-canal)" },
+    oportunidade:  { label:"Oportunidade Seletiva",   color:"var(--cat-oportunidade)" },
+    naopri:        { label:"Não Priorizar / Futuro",  color:"var(--cat-naopri)" }
+  };
+  var ONDA = {
+    1:{l:"Onda 1",r:"21/07–03/08"}, 2:{l:"Onda 2",r:"04/08–17/08"}, 3:{l:"Onda 3",r:"18/08–31/08"},
+    4:{l:"Onda 4",r:"01/09–14/09"}, 5:{l:"Onda 5",r:"15/09–28/09"}, futuro:{l:"Futuro",r:"contingência"}
+  };
+  var W = { alto:1.0, "médio":0.6, baixo:0.32, "n/a":0.16 };
+
+  var ITEMS = [
+    {n:1,name:"TikTok Business Center",cat:"fundacao",onda:1,cli:"n/a",est:"alto",note:"criar com calma — histórico de bloqueio, prioridade do dia 1"},
+    {n:2,name:"Meta Business Manager",cat:"fundacao",onda:1,cli:"n/a",est:"alto"},
+    {n:3,name:"Play Console (cadastro mínimo)",cat:"fundacao",onda:1,cli:"n/a",est:"alto",note:"app sendo refeito do zero — publicação real fica pra quando houver build"},
+    {n:4,name:"Google Ads — conta criada",cat:"fundacao",onda:1,cli:"n/a",est:"médio"},
+    {n:5,name:"Kwai — conta criada",cat:"oportunidade",onda:1,cli:"n/a",est:"baixo",note:"canal complementar, nunca fundação"},
+    {n:6,name:"Domínio institucional + subdomínios + DNS",cat:"fundacao",onda:1,cli:"n/a",est:"alto"},
+    {n:7,name:"Páginas Meta (institucional/motorista/passageiro)",cat:"fundacao",onda:1,cli:"médio",p:"M/P",est:"alto"},
+    {n:8,name:"Landing pages publicadas (motorista/passageiro)",cat:"fundacao",onda:1,cli:"alto",p:"M/P",est:"alto"},
+    {n:9,name:"Meta CA Motorista + CA Passageiro",cat:"fundacao",onda:1,cli:"n/a",est:"alto"},
+    {n:10,name:"TikTok CA Motorista + CA Passageiro",cat:"fundacao",onda:1,cli:"n/a",est:"alto",note:"mesma cautela do BC — histórico de bloqueio"},
+    {n:11,name:"Buscar soluções de pagamento p/ contas de mídia paga",cat:"fundacao",onda:1,cli:"n/a",est:"alto",note:"sem isso nenhuma CA desta onda ativa billing"},
+
+    {n:12,name:"GTM + GA4 instalado",cat:"fundacao",onda:2,cli:"n/a",est:"alto"},
+    {n:13,name:"Meta Pixel + Conversions API",cat:"fundacao",onda:2,cli:"n/a",est:"alto"},
+    {n:14,name:"TikTok Pixel / Events API",cat:"fundacao",onda:2,cli:"n/a",est:"médio"},
+    {n:15,name:"Taxonomia de UTM padronizada",cat:"fundacao",onda:2,cli:"n/a",est:"alto"},
+    {n:16,name:"MMP contratado (AppsFlyer/Adjust)",cat:"fundacao",onda:2,cli:"n/a",est:"alto"},
+    {n:17,name:"Integração de SDK do MMP nos apps",cat:"fundacao",onda:2,cli:"n/a",est:"alto",note:"depende do time de TI — risco de atraso"},
+    {n:18,name:"Estrutura de QR / link curto rastreável",cat:"diferenciacao",onda:2,cli:"médio",p:"M/P",est:"médio",note:"alinhar com Leandro antes de duplicar"},
+    {n:19,name:"Deep link / deferred deep link",cat:"diferenciacao",onda:2,cli:"médio",p:"M/P",est:"médio"},
+    {n:20,name:"Ponte Codificar → APIs de conversão (n8n)",cat:"fundacao",onda:2,cli:"n/a",est:"alto",note:"alinhar com Dani/TI — mesma frente"},
+    {n:21,name:"Dashboard consolidado",cat:"diferenciacao",onda:2,cli:"n/a",est:"alto"},
+    {n:22,name:"Taxonomia de comportamento online/offline/bug",cat:"fundacao",onda:2,cli:"n/a",est:"alto",note:"pré-requisito das esteiras"},
+    {n:23,name:"Canal Push configurado",cat:"fundacao",onda:2,cli:"alto",p:"M/P",est:"alto"},
+    {n:24,name:"WhatsApp utility configurado",cat:"fundacao",onda:2,cli:"alto",p:"M/P",est:"alto",note:"número novo — rampa de 250 msg/dia"},
+    {n:25,name:"WhatsApp marketing configurado",cat:"diferenciacao",onda:2,cli:"médio",p:"M/P",est:"médio"},
+    {n:26,name:"SMS fallback configurado",cat:"fundacao",onda:2,cli:"baixo",p:"M/P",est:"baixo"},
+
+    {n:27,name:"Esteira de Aquisição (waitlist / lead)",cat:"canal",onda:3,cli:"alto",p:"M/P",est:"alto"},
+    {n:28,name:"Esteira de Ativação (recuperação de corrida falhada)",cat:"diferenciacao",onda:3,cli:"alto",p:"M/P",est:"alto",note:"prioridade nº1 — ataca o funil de usuário online"},
+    {n:29,name:"Esteira Transacional (confiança)",cat:"fundacao",onda:3,cli:"alto",p:"M/P",est:"alto"},
+    {n:30,name:"Campanha de recrutamento de motoristas",cat:"canal",onda:3,cli:"alto",p:"M",est:"alto"},
+    {n:31,name:"Campanha de waitlist / aquecimento de passageiro",cat:"canal",onda:3,cli:"alto",p:"P",est:"alto"},
+    {n:32,name:"Material offline com QR em campo",cat:"canal",onda:3,cli:"médio",p:"M/P",est:"médio"},
+    {n:33,name:"Validação do funil de ponta a ponta",cat:"fundacao",onda:3,cli:"n/a",est:"alto"},
+    {n:34,name:"Ajustes de tracking pós-validação",cat:"fundacao",onda:3,cli:"n/a",est:"alto"},
+    {n:35,name:"QA final de tracking",cat:"fundacao",onda:3,cli:"n/a",est:"alto"},
+    {n:36,name:"Campanha pública de lançamento (passageiro)",cat:"canal",onda:3,cli:"alto",p:"P",est:"alto"},
+
+    {n:37,name:"Ramp-up de campanha de motorista",cat:"canal",onda:4,cli:"alto",p:"M",est:"alto"},
+    {n:38,name:"Monitoramento pós-lançamento",cat:"fundacao",onda:4,cli:"n/a",est:"alto"},
+
+    {n:39,name:"Esteira de Retenção / hábito",cat:"diferenciacao",onda:5,cli:"alto",p:"M/P",est:"médio"},
+    {n:40,name:"Esteira de Reativação / winback",cat:"diferenciacao",onda:5,cli:"alto",p:"M/P",est:"médio"},
+    {n:41,name:"Decidir e implementar holdout de medição",cat:"diferenciacao",onda:5,cli:"n/a",est:"médio"},
+
+    {n:42,name:"BM Cofre completo",cat:"fundacao",onda:3,cli:"n/a",est:"médio",note:"trilha contínua de blindagem desde a Onda 1 — não bloqueia nada"},
+    {n:43,name:"Verificação robusta de domínio Meta",cat:"fundacao",onda:3,cli:"n/a",est:"médio",note:"trilha contínua desde a Onda 1"},
+    {n:44,name:"D-U-N-S / Play Console — modelo organizacional pleno",cat:"fundacao",onda:3,cli:"n/a",est:"médio",note:"trilha contínua desde a Onda 1"},
+    {n:45,name:"BM Reserva (aquecida, dormente)",cat:"fundacao",onda:3,cli:"n/a",est:"baixo",note:"trilha contínua desde a Onda 1"},
+    {n:46,name:"Portfólios WABA apartados (formalização completa)",cat:"fundacao",onda:3,cli:"n/a",est:"médio",note:"trilha contínua desde a Onda 1"},
+    {n:47,name:"Admins com 2FA + cartão dedicado",cat:"fundacao",onda:3,cli:"n/a",est:"médio",note:"trilha contínua desde a Onda 1"},
+
+    {n:48,name:"Funil de usuários OFFLINE — estrutura de reativação",cat:"naopri",onda:"futuro",cli:"alto",p:"P",est:"médio",note:"contingência: montar a estrutura se o funil online não performar"},
+    {n:49,name:"Funil de usuários \"BUG\" — estrutura de recuperação",cat:"naopri",onda:"futuro",cli:"alto",p:"P",est:"médio",note:"contingência: montar se surgirem falhas técnicas relevantes"},
+    {n:50,name:"Funil de CHURN completo (4º funil)",cat:"naopri",onda:"futuro",cli:"médio",p:"P",est:"baixo",note:"agrega os dropouts dos funis online, offline e bug — mapeado, não priorizado agora"}
+  ];
+
+  // ---- geometria ----
+  var OX = 92, OY = 812;
+  // AMAX reduzido (82→64): puxa a nuvem proporcionalmente em direção ao eixo horizontal
+  // (relevância estratégica), sem alterar a coerência com os eixos.
+  var AMIN = 8, AMAX = 64, DOTR = 14;
+  var BANDS = { 1:[78,238], 2:[238,372], 3:[372,500], 4:[500,596], 5:[596,700], futuro:[700,796] };
+  var ORDER = [1,2,3,4,5,"futuro"];
+  var BFILL = {1:"var(--band-1)",2:"var(--band-2)",3:"var(--band-3)",4:"var(--band-4)",5:"var(--band-5)"};
+
+  function rd(d){ return d*Math.PI/180; }
+  function XY(a,r){ return { x: OX + r*Math.cos(rd(a)), y: OY - r*Math.sin(rd(a)) }; }
+  function mul(s){ return function(){ s|=0; s=s+0x6D2B79F5|0; var t=Math.imul(s^s>>>15,1|s); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+  var rng = mul(20260721);
+
+  ORDER.forEach(function(key){
+    var band = BANDS[key];
+    var kk = (key==="futuro")?"futuro":Number(key);
+    var group = ITEMS.filter(function(it){ return it.onda===kk; });
+    var rMin = band[0]+DOTR+6, rMax = band[1]-DOTR-6; if (rMax<rMin) rMax=rMin;
+    var jf = (key===1) ? 0.52 : 0.40;   // Onda 1 um pouco mais desordenada
+    group.forEach(function(it){
+      var c=W[it.cli], e=W[it.est], t=c/(c+e);
+      // coerência com os eixos: +cliente (t alto) → perto do eixo horizontal (ângulo baixo);
+      // +estratégico (t baixo) → perto do eixo vertical (ângulo alto)
+      var ideal = AMIN + (1-t)*(AMAX-AMIN);
+      var jit = (rng()-0.5)*(AMAX-AMIN)*jf;
+      it._a = Math.max(AMIN, Math.min(AMAX, ideal+jit));
+      it._r = rMin + rng()*(rMax-rMin);
+      var p=XY(it._a,it._r); it.x=p.x; it.y=p.y;
+    });
+    var minD = 2*DOTR + 4;
+    for (var iter=0; iter<280; iter++){
+      for (var a=0;a<group.length;a++) for (var b=a+1;b<group.length;b++){
+        var A=group[a],B=group[b],dx=B.x-A.x,dy=B.y-A.y,d=Math.hypot(dx,dy);
+        if (d>0 && d<minD){ var pu=(minD-d)/2,ux=dx/d,uy=dy/d; A.x-=ux*pu;A.y-=uy*pu;B.x+=ux*pu;B.y+=uy*pu; }
+      }
+      group.forEach(function(it){
+        var dx=it.x-OX,dy=OY-it.y,r=Math.hypot(dx,dy),an=Math.atan2(dy,dx)*180/Math.PI;
+        r=Math.max(rMin,Math.min(rMax,r)); an=Math.max(AMIN,Math.min(AMAX,an));
+        var p=XY(an,r); it.x=p.x; it.y=p.y;
+      });
+    }
+  });
+
+  // ---- SVG ----
+  var NS="http://www.w3.org/2000/svg", svg=document.getElementById("svg");
+  function E(t,a){ var e=document.createElementNS(NS,t); for(var k in a) e.setAttribute(k,a[k]); return e; }
+  function sector(rOut){ var s=44,p=[],i,a; for(i=0;i<=s;i++){a=90*(i/s);p.push(XY(a,rOut));} p.push({x:OX,y:OY}); return "M "+p.map(function(q){return q.x.toFixed(1)+","+q.y.toFixed(1);}).join(" L ")+" Z"; }
+  function arc(r){ var s=44,p=[],i,a; for(i=0;i<=s;i++){a=90*(i/s);p.push(XY(a,r));} return "M "+p.map(function(q){return q.x.toFixed(1)+","+q.y.toFixed(1);}).join(" L "); }
+
+  // defs: degradê radial da faixa Futuro (some pra transparente)
+  var defs=E("defs",{});
+  var grad=E("radialGradient",{id:"fadeF",gradientUnits:"userSpaceOnUse",cx:OX,cy:OY,r:BANDS.futuro[1]});
+  grad.appendChild(E("stop",{offset:(BANDS.futuro[0]/BANDS.futuro[1]).toFixed(3),"stop-color":"#d8c1ec","stop-opacity":"0.9"}));
+  grad.appendChild(E("stop",{offset:"1","stop-color":"#d8c1ec","stop-opacity":"0"}));
+  defs.appendChild(grad); svg.appendChild(defs);
+
+  // Futuro primeiro (degradê), depois ondas sólidas por cima (da maior p/ menor)
+  svg.appendChild(E("path",{d:sector(BANDS.futuro[1]),fill:"url(#fadeF)"}));
+  [5,4,3,2,1].forEach(function(k){ svg.appendChild(E("path",{d:sector(BANDS[k][1]),fill:BFILL[k]})); });
+  // separadores só das ondas sólidas (Futuro não tem borda)
+  [1,2,3,4,5].forEach(function(k){ svg.appendChild(E("path",{d:arc(BANDS[k][1]),class:"band-sep"})); svg.appendChild(E("path",{d:arc(BANDS[k][1]),class:"band-edge"})); });
+
+  // eixos
+  var vTop=XY(90,798), hEnd=XY(0,872);
+  svg.appendChild(E("line",{x1:OX,y1:OY,x2:OX,y2:vTop.y,class:"axis-line"}));
+  svg.appendChild(E("line",{x1:OX,y1:OY,x2:hEnd.x,y2:OY,class:"axis-line"}));
+  svg.appendChild(E("path",{d:"M "+OX+" "+(vTop.y-2)+" l -5 10 l 5 -4 l 5 4 z",class:"axis-arrow"}));
+  svg.appendChild(E("path",{d:"M "+(hEnd.x+2)+" "+OY+" l -10 -5 l 4 5 l -4 5 z",class:"axis-arrow"}));
+
+  function pole(x,y,s){ svg.appendChild(E("circle",{cx:x,cy:y,r:11,class:"pole"})); var t=E("text",{x:x,y:y+0.5,class:"pole-sign"}); t.textContent=s; svg.appendChild(t); }
+  pole(OX, vTop.y-2, "−");
+  pole(OX, OY+22, "+");
+  pole(OX-24, OY, "+");
+  pole(hEnd.x, OY, "−");
+
+  var yt=E("text",{x:32,y:OY-320,class:"axis-title","text-anchor":"middle",transform:"rotate(-90 32 "+(OY-320)+")"});
+  yt.textContent="Relevância para o cliente (motorista + passageiro)"; svg.appendChild(yt);
+  var xt=E("text",{x:OX+300,y:886,class:"axis-title","text-anchor":"middle"});
+  xt.textContent="Relevância estratégica (objetivos da empresa)"; svg.appendChild(xt);
+
+  // rótulos das ondas (na base) — bandas externas alargadas p/ não sobrepor
+  ORDER.forEach(function(key){
+    var b=BANDS[key], rMid=(b[0]+b[1])/2, pos=XY(2.0,rMid);
+    var l=E("text",{x:pos.x,y:OY+24,class:"band-label"}); l.textContent=ONDA[key].l.toUpperCase(); svg.appendChild(l);
+    var s=E("text",{x:pos.x,y:OY+35,class:"band-label-sub"}); s.textContent=ONDA[key].r; svg.appendChild(s);
+  });
+
+  // tooltip
+  var tip=document.getElementById("tip");
+  function showTip(it){
+    var pp=it.p?(" · "+it.p):"";
+    tip.innerHTML='<div class="t-t">'+it.n+'. '+it.name+'</div>'+
+      '<div class="t-m">'+ONDA[it.onda].l+' · '+ONDA[it.onda].r+' · '+CAT[it.cat].label+'<br>Cliente: '+it.cli+pp+' · Estratégico: '+it.est+'</div>'+
+      (it.note?'<div class="t-n">'+it.note+'</div>':'');
+    tip.classList.add("show");
+  }
+  function moveTip(x,y){ var w=272,h=tip.offsetHeight||120; tip.style.left=Math.min(x+15,window.innerWidth-w-8)+"px"; tip.style.top=Math.min(Math.max(8,y+15),window.innerHeight-h-8)+"px"; }
+  function hideTip(){ tip.classList.remove("show"); }
+  function dim(n,on){ document.querySelectorAll("g.node").forEach(function(g){ g.classList.toggle("dim", on && g.dataset.n!==String(n)); }); document.querySelectorAll(".li").forEach(function(li){ li.classList.toggle("on", on && li.dataset.n===String(n)); }); }
+
+  ITEMS.forEach(function(it){
+    var g=E("g",{class:"node",tabindex:"0",role:"img","aria-label":it.n+". "+it.name+" — "+ONDA[it.onda].l});
+    g.dataset.n=it.n;
+    g.appendChild(E("circle",{cx:it.x,cy:it.y,r:DOTR+6,class:"dot-hit"}));
+    g.appendChild(E("circle",{cx:it.x,cy:it.y,r:DOTR,class:"dot",fill:CAT[it.cat].color}));
+    var num=E("text",{x:it.x,y:it.y+0.5,class:"dot-num"}); num.textContent=it.n; g.appendChild(num);
+    g.addEventListener("mouseenter",function(){ showTip(it); dim(it.n,true); });
+    g.addEventListener("mousemove",function(e){ moveTip(e.clientX,e.clientY); });
+    g.addEventListener("mouseleave",function(){ hideTip(); dim(it.n,false); });
+    g.addEventListener("focus",function(){ showTip(it); dim(it.n,true); var r=g.getBoundingClientRect(); moveTip(r.left+r.width/2,r.top+r.height/2); });
+    g.addEventListener("blur",function(){ hideTip(); dim(it.n,false); });
+    svg.appendChild(g);
+  });
+
+  // legenda
+  var legend=document.getElementById("legend");
+  ["fundacao","diferenciacao","canal","oportunidade","naopri"].forEach(function(ck){
+    var items=ITEMS.filter(function(it){return it.cat===ck;});
+    if(!items.length) return;
+    var card=document.createElement("div"); card.className="cat";
+    var head=document.createElement("div"); head.className="cat-head";
+    head.innerHTML='<span class="dotmark" style="background:'+CAT[ck].color+'"></span>'+CAT[ck].label+'<span class="count">'+items.length+'</span>';
+    var body=document.createElement("div"); body.className="cat-items"+(items.length<=3?" one":"");
+    items.forEach(function(it){
+      var li=document.createElement("div"); li.className="li"; li.dataset.n=it.n;
+      var tag=it.p?' <span class="li-tag">('+it.p+')</span>':'';
+      li.innerHTML='<span class="li-n">'+it.n+'</span><span>'+it.name+tag+'</span>';
+      li.addEventListener("mouseenter",function(){ li.classList.add("on"); dim(it.n,true); });
+      li.addEventListener("mouseleave",function(){ li.classList.remove("on"); dim(it.n,false); });
+      body.appendChild(li);
+    });
+    card.appendChild(head); card.appendChild(body); legend.appendChild(card);
+  });
+  var foot=document.createElement("div"); foot.className="foot";
+  foot.textContent="Passe o mouse (ou navegue com Tab) sobre qualquer número — no mapa ou na lista — para ver os detalhes da demanda.";
+  legend.appendChild(foot);
+})();
+</script>
