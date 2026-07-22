@@ -111,17 +111,110 @@
   #tip .t-m { opacity: .8; font-size: 11px; }
   #tip .t-n { margin-top: 5px; font-style: italic; opacity: .9; font-size: 11px; }
   @media (prefers-reduced-motion: reduce) { #tip, .dot { transition: none; } }
+
+  /* ---- Abas ---- */
+  .tabs { max-width: 1380px; margin: 0 auto 18px; display: flex; gap: 6px; border-bottom: 1px solid var(--panel-hair); }
+  .tab {
+    appearance: none; background: transparent; border: 0; border-bottom: 2.5px solid transparent;
+    padding: 9px 16px; font: inherit; font-size: 13.5px; font-weight: 700; color: var(--frame-ink-2);
+    cursor: pointer; border-radius: 8px 8px 0 0; margin-bottom: -1px;
+  }
+  .tab:hover { color: var(--frame-ink); background: color-mix(in srgb, var(--accent) 8%, transparent); }
+  .tab[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab .tcount { font-weight: 800; font-size: 11px; opacity: .7; margin-left: 5px; font-variant-numeric: tabular-nums; }
+  .view[hidden] { display: none; }
+
+  /* ---- Checklist ---- */
+  .ck-wrap { max-width: 1380px; margin: 0 auto; }
+  .ck-top {
+    background: var(--panel); border: 1px solid var(--panel-hair); border-radius: 14px;
+    padding: 16px 18px; box-shadow: var(--shadow); margin-bottom: 18px;
+    display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 16px; align-items: center;
+  }
+  @media (max-width: 700px) { .ck-top { grid-template-columns: 1fr; } }
+  .ck-big { font-size: 30px; font-weight: 800; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .ck-big small { font-size: 14px; font-weight: 700; color: var(--frame-ink-2); }
+  .ck-barout { height: 9px; border-radius: 99px; background: color-mix(in srgb, var(--frame-ink) 10%, transparent); overflow: hidden; margin-top: 9px; }
+  .ck-barin { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--brand-purple), var(--accent)); transition: width .3s ease; }
+  .ck-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn {
+    appearance: none; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer;
+    padding: 8px 13px; border-radius: 9px; border: 1px solid var(--panel-hair);
+    background: var(--panel); color: var(--frame-ink-2);
+  }
+  .btn:hover { color: var(--frame-ink); border-color: var(--accent); }
+
+  .wave { background: var(--panel); border: 1px solid var(--panel-hair); border-radius: 14px; overflow: hidden; box-shadow: var(--shadow); margin-bottom: 14px; }
+  .wave-h { display: flex; align-items: center; gap: 11px; padding: 11px 15px; border-bottom: 1px solid var(--panel-hair); flex-wrap: wrap; }
+  .wave-name { font-size: 14px; font-weight: 800; letter-spacing: -.01em; }
+  .wave-range { font-size: 11.5px; font-weight: 700; color: var(--frame-ink-2); padding: 2px 8px; border-radius: 99px; background: color-mix(in srgb, var(--accent) 13%, transparent); }
+  .wave-prog { margin-left: auto; font-size: 11.5px; font-weight: 800; color: var(--frame-ink-2); font-variant-numeric: tabular-nums; }
+  .wave-mini { width: 76px; height: 6px; border-radius: 99px; background: color-mix(in srgb, var(--frame-ink) 11%, transparent); overflow: hidden; }
+  .wave-mini i { display: block; height: 100%; background: var(--accent); border-radius: 99px; transition: width .3s ease; }
+
+  .row {
+    display: grid; grid-template-columns: 26px 30px minmax(0,1fr) auto auto;
+    gap: 10px; align-items: center; padding: 9px 15px;
+    border-top: 1px solid color-mix(in srgb, var(--panel-hair) 55%, transparent);
+  }
+  .row:first-of-type { border-top: 0; }
+  .row:hover { background: color-mix(in srgb, var(--accent) 6%, transparent); }
+  .row.done .row-name { text-decoration: line-through; opacity: .5; }
+  @media (max-width: 640px) {
+    .row { grid-template-columns: 26px 28px minmax(0,1fr); }
+    .row .row-date, .row .row-cat { grid-column: 3; justify-self: start; }
+  }
+  .cbx { width: 19px; height: 19px; accent-color: var(--brand-purple); cursor: pointer; margin: 0; }
+  .row-n { font-size: 12px; font-weight: 800; color: var(--frame-ink-2); font-variant-numeric: tabular-nums; text-align: right; }
+  .row-name { font-size: 13px; line-height: 1.35; }
+  .row-note { display: block; font-size: 10.5px; color: var(--frame-ink-2); opacity: .85; font-style: italic; margin-top: 2px; }
+  .row-cat { font-size: 9.5px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; padding: 3px 8px; border-radius: 99px; white-space: nowrap; color: var(--dot-ink); }
+  .row-date { font-size: 11.5px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--frame-ink-2); white-space: nowrap; padding: 3px 9px; border-radius: 99px; border: 1px solid var(--panel-hair); }
+  .row-date.late { color: #c2185b; border-color: #c2185b; background: color-mix(in srgb, #c2185b 10%, transparent); }
+  .row-date.today { color: var(--accent); border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
+  .row-date.none { opacity: .5; }
+  .row.done .row-date { color: #1b7f5a; border-color: #1b7f5a; background: color-mix(in srgb, #1b7f5a 12%, transparent); }
+
+  .ck-note { font-size: 11.5px; color: var(--frame-ink-2); line-height: 1.6; padding: 12px 15px; background: var(--panel); border: 1px dashed var(--panel-hair); border-radius: 12px; margin-top: 4px; }
+  .ck-note b { color: var(--frame-ink); }
 </style>
 
 <div class="mx">
   <div class="mx-head">
     <div class="mx-eyebrow">Show Fair · Arquitetura de Growth</div>
     <h1 class="mx-title">Matriz de Priorização de Implantação</h1>
-    <p class="mx-sub">21/07 → 28/09/2026 · inauguração da cidade piloto em 01/09 · 5 ondas de 2 semanas + horizonte futuro. Quanto mais perto do vértice (canto inferior esquerdo), mais cedo entra; o ângulo reflete o peso em cada eixo.</p>
+    <p class="mx-sub">21/07 → 28/09/2026 · inauguração da cidade piloto em 01/09 · 5 ondas de 2 semanas + horizonte futuro. Na <b>Matriz</b>, quanto mais perto do vértice mais cedo entra. No <b>Checklist</b>, cada demanda tem data de entrega e pode ser marcada conforme você executa.</p>
   </div>
-  <div class="mx-grid">
-    <div class="mx-poster"><svg id="svg" viewBox="0 0 1000 900" role="img" aria-label="Matriz de priorização de implantação Show Fair"></svg></div>
-    <div class="mx-legend" id="legend"></div>
+  <div class="tabs" role="tablist">
+    <button class="tab" id="tab-matriz" role="tab" aria-selected="true" aria-controls="view-matriz">Matriz</button>
+    <button class="tab" id="tab-check" role="tab" aria-selected="false" aria-controls="view-check">Checklist de execução<span class="tcount" id="tabcount"></span></button>
+  </div>
+
+  <div class="view" id="view-matriz" role="tabpanel" aria-labelledby="tab-matriz">
+    <div class="mx-grid">
+      <div class="mx-poster"><svg id="svg" viewBox="0 0 1000 900" role="img" aria-label="Matriz de priorização de implantação Show Fair"></svg></div>
+      <div class="mx-legend" id="legend"></div>
+    </div>
+  </div>
+
+  <div class="view" id="view-check" role="tabpanel" aria-labelledby="tab-check" hidden>
+    <div class="ck-wrap">
+      <div class="ck-top">
+        <div>
+          <div class="ck-big" id="ckbig">—</div>
+          <div class="ck-barout"><div class="ck-barin" id="ckbar" style="width:0%"></div></div>
+        </div>
+        <div class="ck-actions">
+          <button class="btn" id="btn-copy">Copiar status</button>
+          <button class="btn" id="btn-reset">Restaurar oficial</button>
+        </div>
+      </div>
+      <div id="waves"></div>
+      <div class="ck-note">
+        <b>Como este checklist salva:</b> as marcações ficam guardadas <b>neste navegador</b> (armazenamento local) — servem para o seu acompanhamento do dia a dia. Elas <b>não sincronizam</b> com quem abrir o link, porque a página é estática (GitHub Pages não tem banco de dados).<br>
+        Para atualizar o status <b>oficial</b> que todo mundo enxerga: clique em <b>“Copiar status”</b> e me mande — eu republico a página com o novo estado. <b>“Restaurar oficial”</b> apaga suas marcações locais e volta ao estado publicado.
+      </div>
+    </div>
   </div>
 </div>
 <div id="tip" role="tooltip"></div>
@@ -337,5 +430,154 @@
   var foot=document.createElement("div"); foot.className="foot";
   foot.textContent="Passe o mouse (ou navegue com Tab) sobre qualquer número — no mapa ou na lista — para ver os detalhes da demanda.";
   legend.appendChild(foot);
+
+  /* =========================================================
+     CHECKLIST DE EXECUÇÃO
+     DATA = data de entrega prevista · OFICIAL = concluídas (estado publicado)
+     Atualizar OFICIAL aqui e republicar para todos verem.
+     ========================================================= */
+  var DATA = {
+    1:"21/07", 2:"21/07", 11:"22/07", 3:"23/07", 4:"23/07", 6:"24/07",
+    5:"27/07", 7:"28/07", 8:"30/07", 9:"31/07", 10:"03/08",
+    12:"04/08", 13:"05/08", 14:"06/08", 15:"06/08", 16:"07/08", 22:"10/08",
+    17:"11/08", 18:"12/08", 19:"12/08", 20:"13/08", 23:"13/08", 24:"14/08",
+    25:"14/08", 26:"17/08", 21:"17/08",
+    27:"18/08", 28:"19/08", 29:"20/08", 30:"20/08", 31:"21/08", 42:"21/08",
+    32:"24/08", 43:"24/08", 33:"25/08", 44:"26/08", 34:"26/08", 45:"27/08",
+    35:"27/08", 46:"28/08", 47:"28/08", 36:"31/08",
+    37:"02/09", 38:"14/09",
+    39:"18/09", 40:"23/09", 41:"28/09"
+    /* 48, 49, 50 = Futuro, sem data */
+  };
+  var OFICIAL = [1, 2];                 // concluídas no estado publicado
+  var HOJE = "22/07";                   // referência para marcar atrasos
+  var ORDEM = [1,2,3,4,5,"futuro"];
+  var KEY = "sf-checklist-v1";
+
+  function loadState(){
+    var s = {};
+    OFICIAL.forEach(function(n){ s[n] = true; });
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) { var p = JSON.parse(raw); if (p && typeof p === "object") s = p; }
+    } catch(e){}
+    return s;
+  }
+  function saveState(s){ try { localStorage.setItem(KEY, JSON.stringify(s)); } catch(e){} }
+  var state = loadState();
+
+  function dateNum(d){ if(!d) return 99999; var p=d.split("/"); return parseInt(p[1],10)*100+parseInt(p[0],10); }
+  function dateClass(it){
+    var d = DATA[it.n];
+    if (!d) return "none";
+    if (state[it.n]) return "";
+    if (dateNum(d) < dateNum(HOJE)) return "late";
+    if (dateNum(d) === dateNum(HOJE)) return "today";
+    return "";
+  }
+
+  var wavesEl = document.getElementById("waves");
+  var ckbig = document.getElementById("ckbig"), ckbar = document.getElementById("ckbar");
+  var tabcount = document.getElementById("tabcount");
+
+  function refreshTotals(){
+    var alvo = ITEMS.filter(function(it){ return it.onda !== "futuro"; });
+    var feitos = alvo.filter(function(it){ return state[it.n]; }).length;
+    var pct = alvo.length ? Math.round(feitos/alvo.length*100) : 0;
+    ckbig.innerHTML = feitos + " <small>de " + alvo.length + " demandas concluídas · " + pct + "%</small>";
+    ckbar.style.width = pct + "%";
+    tabcount.textContent = feitos + "/" + alvo.length;
+    ORDEM.forEach(function(k){
+      var g = ITEMS.filter(function(it){ return String(it.onda) === String(k); });
+      var f = g.filter(function(it){ return state[it.n]; }).length;
+      var lbl = document.getElementById("wp-"+k), mini = document.getElementById("wm-"+k);
+      if (lbl) lbl.textContent = f + "/" + g.length;
+      if (mini) mini.style.width = (g.length ? f/g.length*100 : 0) + "%";
+    });
+  }
+
+  ORDEM.forEach(function(k){
+    var grupo = ITEMS.filter(function(it){ return String(it.onda) === String(k); })
+                     .sort(function(a,b){ return dateNum(DATA[a.n]) - dateNum(DATA[b.n]) || a.n - b.n; });
+    if (!grupo.length) return;
+    var card = document.createElement("div"); card.className = "wave";
+    var h = document.createElement("div"); h.className = "wave-h";
+    h.innerHTML = '<span class="wave-name">' + ONDA[k].l + '</span>' +
+                  '<span class="wave-range">' + ONDA[k].r + '</span>' +
+                  '<span class="wave-prog" id="wp-' + k + '">0/0</span>' +
+                  '<span class="wave-mini"><i id="wm-' + k + '" style="width:0%"></i></span>';
+    card.appendChild(h);
+
+    grupo.forEach(function(it){
+      var row = document.createElement("div");
+      row.className = "row" + (state[it.n] ? " done" : "");
+      row.dataset.n = it.n;
+
+      var cb = document.createElement("input");
+      cb.type = "checkbox"; cb.className = "cbx"; cb.checked = !!state[it.n];
+      cb.setAttribute("aria-label", "Concluir demanda " + it.n + ": " + it.name);
+
+      var num = document.createElement("div"); num.className = "row-n"; num.textContent = it.n;
+
+      var nm = document.createElement("div"); nm.className = "row-name";
+      nm.innerHTML = it.name + (it.p ? ' <span class="li-tag">(' + it.p + ')</span>' : '') +
+                     (it.note ? '<span class="row-note">' + it.note + '</span>' : '');
+
+      var SHORT = { fundacao:"Fundação", diferenciacao:"Diferenciação", canal:"Canal", oportunidade:"Seletiva", naopri:"Futuro" };
+      var cat = document.createElement("div"); cat.className = "row-cat";
+      cat.textContent = SHORT[it.cat] || CAT[it.cat].label;
+      cat.style.background = CAT[it.cat].color;
+      cat.title = CAT[it.cat].label;
+
+      var dt = document.createElement("div");
+      dt.className = "row-date " + dateClass(it);
+      dt.textContent = DATA[it.n] || "sem data";
+
+      cb.addEventListener("change", function(){
+        state[it.n] = cb.checked;
+        if (!cb.checked) delete state[it.n];
+        saveState(state);
+        row.classList.toggle("done", cb.checked);
+        dt.className = "row-date " + dateClass(it);
+        refreshTotals();
+      });
+
+      row.appendChild(cb); row.appendChild(num); row.appendChild(nm);
+      row.appendChild(cat); row.appendChild(dt);
+      card.appendChild(row);
+    });
+    wavesEl.appendChild(card);
+  });
+  refreshTotals();
+
+  document.getElementById("btn-reset").addEventListener("click", function(){
+    try { localStorage.removeItem(KEY); } catch(e){}
+    location.reload();
+  });
+  document.getElementById("btn-copy").addEventListener("click", function(){
+    var feitos = ITEMS.filter(function(it){ return state[it.n]; })
+                      .map(function(it){ return it.n + ". " + it.name; });
+    var txt = "STATUS SHOW FAIR GROWTH — " + feitos.length + " concluídas\n\n" + (feitos.join("\n") || "(nenhuma)");
+    var btn = this;
+    function ok(){ var o = btn.textContent; btn.textContent = "Copiado!"; setTimeout(function(){ btn.textContent = o; }, 1600); }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(txt).then(ok, function(){ window.prompt("Copie o status:", txt); });
+    } else { window.prompt("Copie o status:", txt); }
+  });
+
+  /* ---- abas ---- */
+  var tabs = [
+    { b: document.getElementById("tab-matriz"), v: document.getElementById("view-matriz") },
+    { b: document.getElementById("tab-check"),  v: document.getElementById("view-check")  }
+  ];
+  tabs.forEach(function(t){
+    t.b.addEventListener("click", function(){
+      tabs.forEach(function(o){
+        var on = (o === t);
+        o.b.setAttribute("aria-selected", on ? "true" : "false");
+        o.v.hidden = !on;
+      });
+    });
+  });
 })();
 </script>
